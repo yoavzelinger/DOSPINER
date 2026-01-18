@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import pandas as pd
 from copy import deepcopy
 
+from sklearn.base import ClassifierMixin
 from sklearn.tree import DecisionTreeClassifier
 
 from DOSPINER.ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
@@ -19,17 +20,17 @@ class AFixer(ABC):
                  faulty_nodes_indices: list[int],
                  X_prior: pd.DataFrame = None,
                  y_prior: pd.Series = None,
-                 sklearn_model: DecisionTreeClassifier = None
+                 sklearn_model: ClassifierMixin = None
     ):
         """
         Initialize the Fixer.
         
         Parameters:
-        mapped_model (ATreeBasedMappedModel): The mapped decision tree.
+        mapped_model (ATreeBasedMappedModel): The mapped model.
         X (DataFrame): The data.
         y (Series): The target column.
         faulty_nodes_indices (list[int]): The indices of the faulty nodes.
-        sklearn_model (DecisionTreeClassifier, optional): The sklearn decision tree model. Defaults to None (Taken from mapped_model).
+        sklearn_model (ClassifierMixin, optional): The sklearn model. Defaults to None (Taken from mapped_model).
         """
         assert self.alias is not None, "Alias must be set to a fixer class"
 
@@ -38,7 +39,7 @@ class AFixer(ABC):
         self.X = X
         self.y = y
         self.faulty_nodes_indices = faulty_nodes_indices
-        self.fixed_tree: DecisionTreeClassifier = None
+        self.fixed_tree: ClassifierMixin = None
 
         self.X_prior = X_prior
         self.y_prior = y_prior
@@ -61,12 +62,12 @@ class AFixer(ABC):
         return faulty_node.get_data_reached_node(self.X, self.y, allow_empty=False)
     
     @abstractmethod
-    def fix_model(self) -> DecisionTreeClassifier:
+    def fix_model(self) -> ClassifierMixin:
         """
         Fix the decision tree.
 
         Returns:
-            DecisionTreeClassifier: The fixed decision tree.
+            ClassifierMixin: The fixed decision tree.
         """
         assert self.fixed_tree, "The tree wasn't fixed yet"
 
