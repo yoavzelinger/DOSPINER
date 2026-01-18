@@ -15,7 +15,7 @@ class DriftingModel(Enum):
     DecisionTree = auto()
     RandomForest = auto()
 
-DRIFTING_MODEL = DriftingModel.RandomForest()
+DRIFTING_MODEL = DriftingModel.RandomForest
 
 # Dataset partitions sizes
 BEFORE_PROPORTION = 0.7
