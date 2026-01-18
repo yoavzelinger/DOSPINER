@@ -4,7 +4,7 @@ from copy import deepcopy
 
 from sklearn.tree import DecisionTreeClassifier
 
-from APPETITE import Constants as constants
+from DOSPINER import Constants as constants
 
 from .AFixer import AFixer
 

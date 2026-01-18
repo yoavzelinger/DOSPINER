@@ -6,7 +6,7 @@ import numpy as np
 
 from sklearn.tree import DecisionTreeClassifier
 
-import APPETITE.Constants as constants
+import DOSPINER.Constants as constants
 
 from .ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
 from .ModelMapping.TreeNodeComponent import TreeNodeComponent

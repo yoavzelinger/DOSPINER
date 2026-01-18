@@ -1,1 +1,2 @@
 from .DecisionTreeClassifierBuilder import build_tree
+from .RandomForestClassifierBuilder import build_forest

@@ -2,8 +2,8 @@ from typing import Callable
 
 import pandas as pd
 
-from APPETITE import Constants as constants
-from APPETITE.DataSynthesizer import DataSynthesizer
+from DOSPINER import Constants as constants
+from DOSPINER.DataSynthesizer import DataSynthesizer
 
 class TreeNodeComponent:
     # Indexing

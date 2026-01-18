@@ -2,10 +2,10 @@ from os import path as os_path
 from json import load as load_json
 from datetime import datetime
 
-from APPETITE import constants
+from DOSPINER import constants
 
-from APPETITE.Diagnosers import Oracle
-from APPETITE.Fixers import *
+from DOSPINER.Diagnosers import Oracle
+from DOSPINER.Fixers import *
 
 FeatureType = constants.FeatureType
 RANDOM_STATE = constants.RANDOM_STATE
@@ -44,6 +44,9 @@ _TREE_MAX_LEAF_NODES = [10, 20, 30]
 TREE_PARAM_GRID = {
     "criterion": _CRITERIONS,
     "max_leaf_nodes": _TREE_MAX_LEAF_NODES
+}
+FOREST_PARAM_GRID = {
+    "criterion": _CRITERIONS
 }
 
 MINIMUM_ORIGINAL_ACCURACY = 0.75

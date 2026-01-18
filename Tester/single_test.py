@@ -8,7 +8,7 @@ import traceback
 
 from sklearn.base import ClassifierMixin
 
-from APPETITE import *
+from DOSPINER import *
 
 import Tester.TesterConstants as tester_constants
 from Tester.DataManagementTools import *

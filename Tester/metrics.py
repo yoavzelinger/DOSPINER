@@ -1,7 +1,7 @@
 from copy import deepcopy
 from sklearn.metrics import accuracy_score
 
-from APPETITE import *
+from DOSPINER import *
 
 import Tester.TesterConstants as tester_constants
 

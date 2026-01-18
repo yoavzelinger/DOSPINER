@@ -1,7 +1,7 @@
 import pandas as pd
 from abc import ABC, abstractmethod
 
-from APPETITE.ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
+from DOSPINER.ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
 
 class ADiagnoser(ABC):
     def __init__(self, 

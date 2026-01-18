@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 
-from APPETITE import Constants as constants
-from APPETITE.ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
+from DOSPINER import Constants as constants
+from DOSPINER.ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
 
-from APPETITE.Diagnosers.SFLDT import SFLDT
+from DOSPINER.Diagnosers.SFLDT import SFLDT
 
 from .utils import *
 

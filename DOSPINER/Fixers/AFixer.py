@@ -4,10 +4,10 @@ from copy import deepcopy
 
 from sklearn.tree import DecisionTreeClassifier
 
-from APPETITE.ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
-from APPETITE.ModelMapping.TreeNodeComponent import TreeNodeComponent
+from DOSPINER.ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
+from DOSPINER.ModelMapping.TreeNodeComponent import TreeNodeComponent
 
-from APPETITE.Diagnosers import *
+from DOSPINER.Diagnosers import *
 
 class AFixer(ABC):
     alias = None

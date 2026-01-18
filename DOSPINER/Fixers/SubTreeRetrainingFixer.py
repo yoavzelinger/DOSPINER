@@ -1,7 +1,7 @@
 from sklearn.tree import DecisionTreeClassifier
 
-import APPETITE.Constants as constants
-from APPETITE.SubTreeReplaceableDecisionTree import SubTreeReplaceableDecisionTree
+import DOSPINER.Constants as constants
+from DOSPINER.SubTreeReplaceableDecisionTree import SubTreeReplaceableDecisionTree
 
 from .AFixer import *
 

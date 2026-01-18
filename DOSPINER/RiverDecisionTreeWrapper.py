@@ -6,7 +6,7 @@ from river.tree import HoeffdingTreeClassifier, HoeffdingAdaptiveTreeClassifier,
 
 from river.stream import iter_pandas
 
-import APPETITE.Constants as constants
+import DOSPINER.Constants as constants
 
 class RiverDecisionTreeWrapper(DecisionTreeClassifier):
     """

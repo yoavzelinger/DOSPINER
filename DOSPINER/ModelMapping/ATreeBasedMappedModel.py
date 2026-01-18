@@ -7,7 +7,7 @@ import numpy as np
 
 from sklearn.base import ClassifierMixin
 
-from APPETITE import Constants as constants
+from DOSPINER import Constants as constants
 
 from .TreeNodeComponent import TreeNodeComponent
 
