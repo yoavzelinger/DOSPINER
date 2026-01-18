@@ -12,7 +12,7 @@ from DOSPINER import *
 
 import Tester.TesterConstants as tester_constants
 from Tester.DataManagementTools import *
-from Tester.Builders import build_tree
+from Tester.Builders import build_tree, build_forest
 from Tester.metrics import get_accuracy, get_wasted_effort, get_correctly_identified_ratio
 
 def get_dataset(directory: str,
@@ -26,10 +26,22 @@ def get_sklearn_model(X_train,
                       y_train,
                       previous_model = None
  ) -> ClassifierMixin:
-    return build_tree(X_train, y_train, model=deepcopy(previous_model))
+    match tester_constants.DRIFTING_MODEL:
+        case tester_constants.DriftingModel.DecisionTree:
+            return build_tree(X_train, y_train, model=deepcopy(previous_model))
+        case tester_constants.DriftingModel.RandomForest:
+            return build_forest(X_train, y_train, model=deepcopy(previous_model))
+        case _:
+            raise ValueError(f"Unsupported drifting model: {tester_constants.DRIFTING_MODEL}")
 
 def get_mapped_model(sklearn_model, feature_types, X_train, y_train):
-    return MappedDecisionTree(sklearn_model, feature_types=feature_types, X=X_train, y=y_train)
+    match tester_constants.DRIFTING_MODEL:
+        case tester_constants.DriftingModel.DecisionTree:
+            return MappedDecisionTree(sklearn_model, feature_types=feature_types, X=X_train, y=y_train)
+        case tester_constants.DriftingModel.RandomForest:
+            return MappedRandomForest(sklearn_model, feature_types=feature_types, X=X_train, y=y_train)
+        case _:
+            raise ValueError(f"Unsupported drifting model: {tester_constants.DRIFTING_MODEL}")
 
 def drift_tree(mapped_model: ATreeBasedMappedModel,
                dataset: Dataset,

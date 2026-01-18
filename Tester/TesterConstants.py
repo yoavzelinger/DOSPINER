@@ -1,3 +1,4 @@
+from enum import Enum, auto
 from os import path as os_path
 from json import load as load_json
 from datetime import datetime
@@ -9,6 +10,12 @@ from DOSPINER.Fixers import *
 
 FeatureType = constants.FeatureType
 RANDOM_STATE = constants.RANDOM_STATE
+
+class DriftingModel(Enum):
+    DecisionTree = auto()
+    RandomForest = auto()
+
+DRIFTING_MODEL = DriftingModel.RandomForest()
 
 # Dataset partitions sizes
 BEFORE_PROPORTION = 0.7
