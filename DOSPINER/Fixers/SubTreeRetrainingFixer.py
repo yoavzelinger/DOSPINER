@@ -5,7 +5,7 @@ from DOSPINER.SubTreeReplaceableDecisionTree import SubTreeReplaceableDecisionTr
 
 from .AFixer import *
 
-class SubTreeRetrainingFixer(AFixer):
+class SubTreeRetrainingFixer(ATreeFixer):
     alias = "subtree_retrain"
 
     def __init__(self,

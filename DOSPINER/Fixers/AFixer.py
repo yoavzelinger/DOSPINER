@@ -70,3 +70,9 @@ class AFixer(ABC):
         assert self.fixed_tree, "The tree wasn't fixed yet"
 
         return self.fixed_tree
+    
+class ATreeFixer(AFixer):
+    """
+    Abstract class for tree-based fixers.
+    """
+    pass
