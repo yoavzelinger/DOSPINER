@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import pandas as pd
 
 from sklearn.ensemble import RandomForestClassifier
@@ -25,7 +27,7 @@ class MappedRandomForest(ATreeBasedMappedModel):
             y (Series): The target column.
         """
         self.mapped_estimators: list[MappedDecisionTree] = [
-            MappedDecisionTree(decision_tree_model=decision_tree,
+            MappedDecisionTree(model=decision_tree,
                                feature_types=feature_types,
                                X=X,
                                y=y
@@ -45,9 +47,11 @@ class MappedRandomForest(ATreeBasedMappedModel):
         component: TreeNodeComponent
         for estimator_index, mapped_estimator in enumerate(self.mapped_estimators):
             for component in mapped_estimator:
-                self.components_map[current_component_index] = component
-                self.component_estimator_map[current_component_index] = (estimator_index, component.get_index())
+                previous_component_index = component.get_index()
+                self.component_estimator_map[current_component_index] = (estimator_index, previous_component_index)
+                component = deepcopy(component)
                 component.component_index = current_component_index
+                self.components_map[current_component_index] = component
                 current_component_index += 1
                 
     def get_model_representation(self) -> str:
