@@ -6,6 +6,7 @@ from sklearn.tree import DecisionTreeClassifier
 
 from DOSPINER.ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
 from DOSPINER.ModelMapping.TreeNodeComponent import TreeNodeComponent
+from DOSPINER.ModelMapping.MappedDecisionTree import MappedDecisionTree
 
 from DOSPINER.Diagnosers import *
 
@@ -75,4 +76,13 @@ class ATreeFixer(AFixer):
     """
     Abstract class for tree-based fixers.
     """
-    pass
+    def __init__(self, 
+                 mapped_model: MappedDecisionTree,
+                 X: pd.DataFrame,
+                 y: pd.Series,
+                 faulty_nodes_indices: list[int],
+                 X_prior: pd.DataFrame = None,
+                 y_prior: pd.Series = None,
+                 sklearn_model: DecisionTreeClassifier = None
+    ):
+        super().__init__(mapped_model, X, y, faulty_nodes_indices, X_prior, y_prior, sklearn_model)
