@@ -48,7 +48,7 @@ def build_tree(
     decision_tree_classifier = DecisionTreeClassifier(random_state=tester_constants.RANDOM_STATE)
     # Find best parameters using grid search cross validation (on training data)
     grid_search_classifier = GridSearchCV(estimator=decision_tree_classifier, 
-                                     param_grid=tester_constants.PARAM_GRID, 
+                                     param_grid=tester_constants.TREE_PARAM_GRID, 
                                      cv=cross_validation_split_count)
     grid_search_classifier.fit(modified_X_train, modified_y_train)
     grid_search_best_params = grid_search_classifier.best_params_ # Hyperparameters

@@ -41,7 +41,7 @@ CROSS_VALIDATION_SPLIT_COUNT = 5
 # Decision Tree Grid search parameters
 _CRITERIONS = ["gini", "entropy"]
 _TREE_MAX_LEAF_NODES = [10, 20, 30]
-PARAM_GRID = {
+TREE_PARAM_GRID = {
     "criterion": _CRITERIONS,
     "max_leaf_nodes": _TREE_MAX_LEAF_NODES
 }
