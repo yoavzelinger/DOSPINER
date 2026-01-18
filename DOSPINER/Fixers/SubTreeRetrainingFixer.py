@@ -31,7 +31,7 @@ class SubTreeRetrainingFixer(AFixer):
             subtree_type: constants.SubTreeType = constants.SubTreeType[subtree_type]
         self.subtree_type: constants.SubTreeType = subtree_type
 
-    def fix_tree(self) -> tuple[DecisionTreeClassifier, list[int]]:
+    def fix_model(self) -> tuple[DecisionTreeClassifier, list[int]]:
         """
         Fix the decision tree.
 
@@ -50,4 +50,4 @@ class SubTreeRetrainingFixer(AFixer):
         
         self.fixed_tree.fit(self.X, self.y)
         
-        return super().fix_tree()
+        return super().fix_model()

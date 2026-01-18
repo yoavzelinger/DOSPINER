@@ -6,7 +6,7 @@ from .AIndependentFixer import AIndependentFixer
 
 class TopFeaturesNodesFixer(AIndependentFixer):
     alias = "per_features_top_tweak"
-    def fix_tree(self) -> tuple[DecisionTreeClassifier, list[int]]:
+    def fix_model(self) -> tuple[DecisionTreeClassifier, list[int]]:
         """
         Fix the decision tree.
 
@@ -22,4 +22,4 @@ class TopFeaturesNodesFixer(AIndependentFixer):
         for faulty_node_index, _ in top_features_faults.values():
             X_reached_faulty_node, y_reached_faulty_node = self._filter_data_reached_fault(faulty_node_index)
             self.fix_faulty_node(faulty_node_index, X_reached_faulty_node, y_reached_faulty_node)
-        return super().fix_tree()
+        return super().fix_model()

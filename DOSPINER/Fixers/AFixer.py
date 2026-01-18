@@ -60,7 +60,7 @@ class AFixer(ABC):
         return faulty_node.get_data_reached_node(self.X, self.y, allow_empty=False)
     
     @abstractmethod
-    def fix_tree(self) -> DecisionTreeClassifier:
+    def fix_model(self) -> DecisionTreeClassifier:
         """
         Fix the decision tree.
 
