@@ -36,7 +36,7 @@ class MappedRandomForest(ATreeBasedMappedModel):
         super().__init__(model, X, y, feature_types)
 
 
-    def map_tree(self, 
+    def map_model(self, 
     ) -> dict[int, 'MappedDecisionTree.DecisionTreeNode']:
         self.components_map = {}
         self.component_estimator_map = {}
