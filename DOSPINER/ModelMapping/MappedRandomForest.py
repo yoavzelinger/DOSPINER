@@ -1,6 +1,7 @@
 from copy import deepcopy
 
 import pandas as pd
+from scipy.sparse import csr_matrix, hstack
 
 from sklearn.ensemble import RandomForestClassifier
 
@@ -54,6 +55,10 @@ class MappedRandomForest(ATreeBasedMappedModel):
                 self.components_map[current_component_index] = component
                 current_component_index += 1
                 
+    def get_node_indicator(self, X: pd.DataFrame) -> csr_matrix:
+        return hstack([mapped_estimator.get_node_indicator(X) for mapped_estimator in self.mapped_estimators],
+                      format='csr')
+
     def get_model_representation(self) -> str:
         for i, tree in enumerate(self.mapped_estimators):
             tree_repr = f"Tree {i}:\n{tree.__repr__()}\n\n"
