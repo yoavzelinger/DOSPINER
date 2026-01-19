@@ -28,7 +28,8 @@ class ForestFixerWrapper(AFixer):
                  faulty_nodes_indices: list[int],
                  X_prior: pd.DataFrame = None,
                  y_prior: pd.Series = None,
-                 sklearn_model: RandomForestClassifier = None
+                 sklearn_model: RandomForestClassifier = None,
+                 **kwargs: dict
     ):
         super().__init__(
             mapped_model,
@@ -40,6 +41,7 @@ class ForestFixerWrapper(AFixer):
             sklearn_model
         )
         self.base_fixer_class: type[ATreeFixer] = base_fixer_class
+        self.base_fixer_parameters = kwargs
         self.faulty_estimators: dict[int, list[int]] = self.get_faulty_estimators()
 
     def get_faulty_estimators(self) -> dict[int, list[int]]:
@@ -70,7 +72,8 @@ class ForestFixerWrapper(AFixer):
                 y=self.y,
                 faulty_nodes_indices=faulty_estimator_faulty_nodes_indices,
                 X_prior=self.X_prior,
-                y_prior=self.y_prior
+                y_prior=self.y_prior,
+                **self.base_fixer_parameters
             )
             self.fixed_model.estimators_[faulty_estimator_index] = fixer.fix_model()
 
