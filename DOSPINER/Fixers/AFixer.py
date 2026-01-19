@@ -39,7 +39,7 @@ class AFixer(ABC):
         self.X = X
         self.y = y
         self.faulty_nodes_indices = faulty_nodes_indices
-        self.fixed_tree: ClassifierMixin = None
+        self.fixed_model: ClassifierMixin = None
 
         self.X_prior = X_prior
         self.y_prior = y_prior
@@ -64,14 +64,14 @@ class AFixer(ABC):
     @abstractmethod
     def fix_model(self) -> ClassifierMixin:
         """
-        Fix the decision tree.
+        Fix the model.
 
         Returns:
-            ClassifierMixin: The fixed decision tree.
+            ClassifierMixin: The fixed model.
         """
-        assert self.fixed_tree, "The tree wasn't fixed yet"
+        assert self.fixed_model, "The model wasn't fixed yet"
 
-        return self.fixed_tree
+        return self.fixed_model
     
 class ATreeFixer(AFixer):
     """

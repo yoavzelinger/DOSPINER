@@ -190,8 +190,8 @@ def run_single_test(directory, file_name, file_extension: str = ".csv", repair_w
                     fixer_parameters = fixer_data.get("parameters")
                     fixer_class = get_fixer(fixer_class_name)
                     fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=faulty_nodes_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
-                    fixed_tree = fixer.fix_model()
-                    fixed_test_accuracy = get_accuracy(fixed_tree, X_test, y_test)
+                    fixed_model = fixer.fix_model()
+                    fixed_test_accuracy = get_accuracy(fixed_model, X_test, y_test)
                     test_accuracy_bump = fixed_test_accuracy - post_drift_test_accuracy
                     current_results_dict.update({
                         f"{diagnoser_output_name}-{fixer_output_name} {tester_constants.FIX_ACCURACY_NAME_SUFFIX}": fixed_test_accuracy * 100,
@@ -327,8 +327,8 @@ def run_single_test_v2(directory, file_name, file_extension: str = ".csv", repai
                     fixer_parameters = fixer_data.get("parameters")
                     fixer_class = get_fixer(fixer_class_name)
                     fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=faulty_nodes_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
-                    fixed_tree = fixer.fix_model()
-                    fixed_test_accuracy = get_accuracy(fixed_tree, X_test, y_test)
+                    fixed_model = fixer.fix_model()
+                    fixed_test_accuracy = get_accuracy(fixed_model, X_test, y_test)
                     test_accuracy_bump = fixed_test_accuracy - post_drift_test_accuracy
                     current_results_dict.update({
                         f"{diagnoser_output_name}-{fixer_output_name} {tester_constants.FIX_ACCURACY_NAME_SUFFIX}": fixed_test_accuracy * 100,

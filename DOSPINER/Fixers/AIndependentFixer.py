@@ -42,7 +42,7 @@ class AIndependentFixer(ATreeFixer):
             values[0][second_max_value_index] = max_value
         
         # print(f"{self.diagnoser_output_name}: Faulty node {faulty_node_index} (Terminal) class changed from {max(old_values[0])} to {max(values[0])}")
-        self.fixed_tree.tree_.value[faulty_node_index] = values
+        self.fixed_model.tree_.value[faulty_node_index] = values
 
 
     def _fix_numeric_faulty_node(self, 
@@ -65,7 +65,7 @@ class AIndependentFixer(ATreeFixer):
         node_feature_average_difference = node_feature_average_after_drift - node_feature_average_before_drift
         new_threshold = faulty_node.threshold + node_feature_average_difference
         # print(f"{self.diagnoser_output_name}: Faulty node {faulty_node_index} (Numeric) threshold changed from {faulty_node.threshold:.2f} to {new_threshold:.2f}")
-        self.fixed_tree.tree_.threshold[faulty_node_index] = new_threshold
+        self.fixed_model.tree_.threshold[faulty_node_index] = new_threshold
 
     def _fix_categorical_faulty_node(self,
                                     faulty_node_index: int,
@@ -81,8 +81,8 @@ class AIndependentFixer(ATreeFixer):
           faulty_node = self.original_mapped_model[faulty_node_index]
           left_child, right_child = faulty_node.left_child, faulty_node.right_child
           left_child_index, right_child_index = left_child.get_index(), right_child.get_index()
-          self.fixed_tree.tree_.children_left[faulty_node_index] = right_child_index
-          self.fixed_tree.tree_.children_right[faulty_node_index] = left_child_index
+          self.fixed_model.tree_.children_left[faulty_node_index] = right_child_index
+          self.fixed_model.tree_.children_right[faulty_node_index] = left_child_index
         #   print(f"{self.diagnoser_output_name}: Faulty node {faulty_node_index} (Categorical) condition flipped")
           
     def fix_faulty_node(self,
@@ -97,7 +97,7 @@ class AIndependentFixer(ATreeFixer):
             faulty_node_index (int): The index of the faulty node.
             X_reached_faulty_node (DataFrame): The data that reached the faulty node.
         """
-        self.fixed_tree: DecisionTreeClassifier = deepcopy(self.sklearn_model)
+        self.fixed_model: DecisionTreeClassifier = deepcopy(self.sklearn_model)
         faulty_node = self.original_mapped_model[faulty_node_index]
         if faulty_node.is_terminal():
             self._fix_terminal_faulty_node(faulty_node_index, X_reached_faulty_node, y_reached_faulty_node)

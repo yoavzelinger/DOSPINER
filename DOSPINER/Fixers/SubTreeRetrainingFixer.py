@@ -40,7 +40,7 @@ class SubTreeRetrainingFixer(ATreeFixer):
             list[int]: The indices of the faulty nodes.
         """
         # print(f"Fixing faulty nodes: {self.faulty_nodes_indices}")
-        self.fixed_tree = SubTreeReplaceableDecisionTree(self.sklearn_model,
+        self.fixed_model = SubTreeReplaceableDecisionTree(self.sklearn_model,
                                                          list(map(self.original_mapped_model.__getitem__, self.faulty_nodes_indices)),
                                                          dependency_handling_type=self.dependency_handling_type,
                                                          use_prior_knowledge=self.use_prior_knowledge,
@@ -48,6 +48,6 @@ class SubTreeRetrainingFixer(ATreeFixer):
                                                          X_prior=self.X_prior,
                                                          y_prior=self.y_prior)
         
-        self.fixed_tree.fit(self.X, self.y)
+        self.fixed_model.fit(self.X, self.y)
         
         return super().fix_model()
