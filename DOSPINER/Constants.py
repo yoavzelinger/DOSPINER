@@ -13,6 +13,12 @@ class NodeIndexType(Enum):
     COMPONENT_INDEX = auto()
     SPECTRA_INDEX = auto()
 
+class DriftingModel(Enum):
+    DecisionTree = auto()
+    RandomForest = auto()
+
+DRIFTING_MODEL = DriftingModel.RandomForest
+
 # Random state
 RANDOM_STATE = 7
 

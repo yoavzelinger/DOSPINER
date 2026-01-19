@@ -11,11 +11,9 @@ from DOSPINER.Fixers import *
 FeatureType = constants.FeatureType
 RANDOM_STATE = constants.RANDOM_STATE
 
-class DriftingModel(Enum):
-    DecisionTree = auto()
-    RandomForest = auto()
+DriftingModel = constants.DriftingModel
+DRIFTING_MODEL = constants.DRIFTING_MODEL
 
-DRIFTING_MODEL = DriftingModel.RandomForest
 
 # Dataset partitions sizes
 BEFORE_PROPORTION = 0.7
