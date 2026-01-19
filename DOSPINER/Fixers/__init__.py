@@ -26,7 +26,7 @@ def _load_fixer_classes():
                 module = importlib.import_module(full_module_name)
                 for _, cls in inspect.getmembers(
                     module,
-                    lambda c: inspect.isclass(c) and issubclass(c, AFixer) and c is not AFixer
+                    lambda c: inspect.isclass(c) and issubclass(c, (AFixer, ForestFixerWrapper)) and c is not AFixer
                 ):
                     FIXER_CLASSES_DICT[cls.__name__] = cls
 
