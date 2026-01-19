@@ -51,13 +51,9 @@ def build_forest(
                                      param_grid=tester_constants.FOREST_PARAM_GRID, 
                                      cv=cross_validation_split_count)
     grid_search_classifier.fit(modified_X_train, modified_y_train)
-    grid_search_best_params = grid_search_classifier.best_params_ # Hyperparameters
-    random_forest_classifier = RandomForestClassifier(criterion=grid_search_best_params["criterion"],
-                                                      random_state=tester_constants.RANDOM_STATE
-                                                      )
     
-    model = RandomForestClassifier(criterion=grid_search_best_params["criterion"], 
-                                   random_state=tester_constants.RANDOM_STATE
+    model = RandomForestClassifier(**grid_search_classifier.best_params_, 
+                                   random_state=tester_constants.RANDOM_STATE,
                                    )
     model.fit(X_train, y_train)
     model.best_accuracy = accuracy_score(y_validation, model.predict(X_validation))
