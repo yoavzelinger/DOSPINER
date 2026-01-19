@@ -12,6 +12,7 @@ from .MappedDecisionTree import MappedDecisionTree
 class MappedRandomForest(ATreeBasedMappedModel):
     mapped_estimators: list[MappedDecisionTree]
     component_estimator_map: dict[int, tuple[int, int]] # component index to (estimator index, sklearn index in estimator)
+    inverse_component_estimator_map: dict[tuple[int, int], int] # (estimator index, sklearn index in estimator) to component index
 
     def __init__(self, 
                  model: RandomForestClassifier,
@@ -44,16 +45,19 @@ class MappedRandomForest(ATreeBasedMappedModel):
     ) -> dict[int, 'MappedDecisionTree.DecisionTreeNode']:
         self.components_map = {}
         self.component_estimator_map = {}
+        self.inverse_component_estimator_map = {}
         current_component_index = 0
         mapped_estimator: MappedDecisionTree
         component: TreeNodeComponent
         for estimator_index, mapped_estimator in enumerate(self.mapped_estimators):
             for component in mapped_estimator:
                 previous_component_index = component.get_index()
-                self.component_estimator_map[current_component_index] = (estimator_index, previous_component_index)
+                component_local_identity = (estimator_index, previous_component_index)
+                self.component_estimator_map[current_component_index] = component_local_identity
                 component = deepcopy(component)
                 component.component_index = current_component_index
                 self.components_map[current_component_index] = component
+                self.inverse_component_estimator_map[component_local_identity] = current_component_index
                 current_component_index += 1
                 
     def get_node_indicator(self, X: pd.DataFrame) -> csr_matrix:
