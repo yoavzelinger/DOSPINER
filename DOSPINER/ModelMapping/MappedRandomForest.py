@@ -31,7 +31,8 @@ class MappedRandomForest(ATreeBasedMappedModel):
             MappedDecisionTree(model=decision_tree,
                                feature_types=feature_types,
                                X=X,
-                               y=y
+                               y=y,
+                               prune=False
                                )
             for decision_tree in model.estimators_
         ]
