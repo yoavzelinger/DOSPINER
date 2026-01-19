@@ -4,6 +4,9 @@ import inspect
 
 from .ADiagnoser import ADiagnoser
 from .Oracle import Oracle
+from .DistributedForestDiagnoser import DistributedForestDiagnoser
+
+from DOSPINER import Constants as constants
 
 DIAGNOSER_CLASSES_DICT = {}
 
@@ -26,7 +29,7 @@ def _load_diagnoser_classes():
                 module = importlib.import_module(full_module_name)
                 for _, cls in inspect.getmembers(
                     module,
-                    lambda c: inspect.isclass(c) and issubclass(c, ADiagnoser) and c is not ADiagnoser
+                    lambda c: inspect.isclass(c) and issubclass(c, (ADiagnoser, DistributedForestDiagnoser))
                 ):
                     DIAGNOSER_CLASSES_DICT[cls.__name__] = cls
 
@@ -48,6 +51,19 @@ def get_diagnoser(diagnoser_name: str
     """
     assert diagnoser_name in DIAGNOSER_CLASSES_DICT, f"Diagnoser {diagnoser_name} is not supported"
     
-    return DIAGNOSER_CLASSES_DICT[diagnoser_name]
+    
+    DiagnoserClass = DIAGNOSER_CLASSES_DICT[diagnoser_name]
+    
+    if DiagnoserClass is Oracle:
+        return DiagnoserClass
+    
+    match constants.DRIFTING_MODEL:
+        case constants.DriftingModel.DecisionTree:
+            return DiagnoserClass
+        case constants.DriftingModel.RandomForest:
+            return lambda *args, **kwargs: DistributedForestDiagnoser(
+                DiagnoserClass,
+                *args, **kwargs
+                )
 
 __all__ = ["ADiagnoser", "get_diagnoser", "Oracle"]
