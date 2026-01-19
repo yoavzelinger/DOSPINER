@@ -5,6 +5,8 @@ import inspect
 from .AFixer import AFixer
 from .ForestFixerWrapper import ForestFixerWrapper
 
+from DOSPINER import Constants as constants
+
 FIXER_CLASSES_DICT = {}
 
 def _load_fixer_classes():
@@ -47,7 +49,15 @@ def get_fixer(fixer_name: str
     ValueError: If the fixer class is not found.
     """
     assert fixer_name in FIXER_CLASSES_DICT, f"Fixer {fixer_name} is not supported"
-    
-    return FIXER_CLASSES_DICT[fixer_name]
+        
+    FixerClass = FIXER_CLASSES_DICT[fixer_name]
+    match constants.DRIFTING_MODEL:
+        case constants.DriftingModel.DecisionTree:
+            return FixerClass
+        case constants.DriftingModel.RandomForest:
+            return lambda *args, **kwargs: ForestFixerWrapper(
+                FixerClass,
+                *args, **kwargs
+                )
 
-__all__ = ["AFixer", "ForestFixerWrapper", "get_fixer"]
+__all__ = ["AFixer", "get_fixer"]
