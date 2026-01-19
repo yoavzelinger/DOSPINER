@@ -57,5 +57,8 @@ def build_forest(
                                    )
     model.fit(X_train, y_train)
     model.best_accuracy = accuracy_score(y_validation, model.predict(X_validation))
+    
+    for estimator in model.estimators_:
+        estimator.feature_names_in_ = model.feature_names_in_
 
     return model
