@@ -189,7 +189,14 @@ def run_single_test(directory, file_name, file_extension: str = ".csv", repair_w
                     print(f"\t\t\t\t\t\t{fixer_output_name}")
                     fixer_parameters = fixer_data.get("parameters")
                     fixer_class = get_fixer(fixer_class_name)
-                    fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=faulty_nodes_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
+                    fixer: AFixer
+                    match tester_constants.DRIFTING_MODEL:
+                        case tester_constants.DriftingModel.DecisionTree:
+                            fixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=faulty_nodes_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
+                        case tester_constants.DriftingModel.RandomForest:
+                            fixer = ForestFixerWrapper(fixer_class,
+                                mapped_model, X_repair, y_repair, faulty_nodes_indices=faulty_nodes_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters
+                            )
                     fixed_model = fixer.fix_model()
                     fixed_test_accuracy = get_accuracy(fixed_model, X_test, y_test)
                     test_accuracy_bump = fixed_test_accuracy - post_drift_test_accuracy
@@ -326,7 +333,14 @@ def run_single_test_v2(directory, file_name, file_extension: str = ".csv", repai
                     fixer_output_name = fixer_data.get("output_name", fixer_class_name)
                     fixer_parameters = fixer_data.get("parameters")
                     fixer_class = get_fixer(fixer_class_name)
-                    fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=faulty_nodes_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
+                    fixer: AFixer
+                    match tester_constants.DRIFTING_MODEL:
+                        case tester_constants.DriftingModel.DecisionTree:
+                            fixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=faulty_nodes_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
+                        case tester_constants.DriftingModel.RandomForest:
+                            fixer = ForestFixerWrapper(fixer_class,
+                                mapped_model, X_repair, y_repair, faulty_nodes_indices=faulty_nodes_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters
+                            )
                     fixed_model = fixer.fix_model()
                     fixed_test_accuracy = get_accuracy(fixed_model, X_test, y_test)
                     test_accuracy_bump = fixed_test_accuracy - post_drift_test_accuracy

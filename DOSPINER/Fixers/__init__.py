@@ -3,6 +3,7 @@ import importlib
 import inspect
 
 from .AFixer import AFixer
+from .ForestFixerWrapper import ForestFixerWrapper
 
 FIXER_CLASSES_DICT = {}
 
@@ -49,4 +50,4 @@ def get_fixer(fixer_name: str
     
     return FIXER_CLASSES_DICT[fixer_name]
 
-__all__ = ["AFixer", "get_fixer"]
+__all__ = ["AFixer", "ForestFixerWrapper", "get_fixer"]
