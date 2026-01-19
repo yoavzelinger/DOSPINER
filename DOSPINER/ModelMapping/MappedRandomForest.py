@@ -58,6 +58,3 @@ class MappedRandomForest(ATreeBasedMappedModel):
         for i, tree in enumerate(self.mapped_estimators):
             tree_repr = f"Tree {i}:\n{tree.__repr__()}\n\n"
         return tree_repr
-    
-    def __len__(self) -> int:
-        return sum(map(len, self.mapped_estimators))
