@@ -25,13 +25,13 @@ def build_forest(
     Returns:
         RandomForestClassifier: The random forest classifier.
     """
-    np.random.seed(tester_constants.RANDOM_STATE)
+    np.random.seed(tester_constants.constants.RANDOM_STATE)
     
     if model is not None:
         model.fit(X_train, y_train)
         return model
     
-    X_train, X_validation, y_train, y_validation = train_test_split(X_train, y_train, test_size=tester_constants.VALIDATION_SIZE, random_state=tester_constants.RANDOM_STATE)
+    X_train, X_validation, y_train, y_validation = train_test_split(X_train, y_train, test_size=tester_constants.VALIDATION_SIZE, random_state=tester_constants.constants.RANDOM_STATE)
 
     # Grid search modification
     modified_X_train, modified_y_train = X_train, y_train
@@ -45,7 +45,7 @@ def build_forest(
             modified_y_train = pd.concat([modified_y_train, pd.Series([class_name])], ignore_index=True)
     cross_validation_split_count = min(tester_constants.CROSS_VALIDATION_SPLIT_COUNT , modified_y_train.value_counts().min())
 
-    random_forest_classifier = RandomForestClassifier(random_state=tester_constants.RANDOM_STATE)
+    random_forest_classifier = RandomForestClassifier(random_state=tester_constants.constants.RANDOM_STATE)
     # Find best parameters using grid search cross validation (on training data)
     grid_search_classifier = GridSearchCV(estimator=random_forest_classifier, 
                                      param_grid=tester_constants.FOREST_PARAM_GRID, 
@@ -53,7 +53,7 @@ def build_forest(
     grid_search_classifier.fit(modified_X_train, modified_y_train)
     
     model = RandomForestClassifier(**grid_search_classifier.best_params_, 
-                                   random_state=tester_constants.RANDOM_STATE,
+                                   random_state=tester_constants.constants.RANDOM_STATE,
                                    )
     model.fit(X_train, y_train)
     model.best_accuracy = accuracy_score(y_validation, model.predict(X_validation))

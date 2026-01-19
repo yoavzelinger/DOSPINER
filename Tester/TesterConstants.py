@@ -8,12 +8,6 @@ from DOSPINER import constants
 from DOSPINER.Diagnosers import Oracle
 from DOSPINER.Fixers import *
 
-FeatureType = constants.FeatureType
-RANDOM_STATE = constants.RANDOM_STATE
-
-DriftingModel = constants.DriftingModel
-DRIFTING_MODEL = constants.DRIFTING_MODEL
-
 
 # Dataset partitions sizes
 BEFORE_PROPORTION = 0.7
