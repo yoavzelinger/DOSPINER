@@ -33,7 +33,7 @@ def _load_fixer_classes():
 _load_fixer_classes()
 
 def get_fixer(fixer_name: str
- ) -> AFixer:
+ ):
     """
     Get a fixer class by its name.
     
