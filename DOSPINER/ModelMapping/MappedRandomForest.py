@@ -33,7 +33,7 @@ class MappedRandomForest(ATreeBasedMappedModel):
                                y=y
                                )
             for decision_tree in model.estimators_
-        ] # TODO: Check about filtering the data based on the bootstrap and the features used in the tree?
+        ]
         
         super().__init__(model, X, y, feature_types)
 
