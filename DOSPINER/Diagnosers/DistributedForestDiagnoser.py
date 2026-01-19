@@ -3,6 +3,7 @@ import pandas as pd
 from DOSPINER.ModelMapping.MappedRandomForest import MappedRandomForest
 
 from .ADiagnoser import *
+from .SFLDT import SFLDT
 
 class DistributedForestDiagnoser(ADiagnoser):
     """
@@ -50,13 +51,18 @@ class DistributedForestDiagnoser(ADiagnoser):
         """
         self.diagnoses: list[tuple[list[int], float]] = []
         for estimator_index, mapped_estimator in enumerate(self.mapped_model.mapped_estimators):
-            base_diagnoser = self.base_diagnoser_class(
-                mapped_estimator,
-                self.X_after,
-                self.y_after,
-                **self.base_diagnoser_parameters
-            )
-            estimator_diagnoses = base_diagnoser.get_diagnoses(retrieve_ranks=True)
+            estimator_diagnoses: list[tuple[list[int], float]]
+            try:
+                base_diagnoser = self.base_diagnoser_class(
+                    mapped_estimator,
+                    self.X_after,
+                    self.y_after,
+                    **self.base_diagnoser_parameters
+                )
+                estimator_diagnoses = base_diagnoser.get_diagnoses(retrieve_ranks=True)
+            except SFLDT.UnaffectedModelError:
+                # The specific estimator was not affected from the concept drift, skip it
+                continue
             for diagnosis_index, (estimator_diagnosis, estimator_diagnosis_rank) in enumerate(estimator_diagnoses):
                 if diagnosis_index == len(self.diagnoses):
                     self.diagnoses.append(([], 0.0))
