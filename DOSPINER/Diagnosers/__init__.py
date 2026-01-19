@@ -61,6 +61,8 @@ def get_diagnoser(diagnoser_name: str
         case constants.DriftingModel.DecisionTree:
             return DiagnoserClass
         case constants.DriftingModel.RandomForest:
+            if not constants.DISTRIBUTE_DIAGNOSES_COMPUTATION:
+                return DiagnoserClass
             return lambda *args, **kwargs: DistributedForestDiagnoser(
                 DiagnoserClass,
                 *args, **kwargs

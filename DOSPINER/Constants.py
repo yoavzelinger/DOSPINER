@@ -18,6 +18,7 @@ class DriftingModel(Enum):
     RandomForest = auto()
 
 DRIFTING_MODEL = DriftingModel.RandomForest
+DISTRIBUTE_DIAGNOSES_COMPUTATION = True
 
 # Random state
 RANDOM_STATE = 7
