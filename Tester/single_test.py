@@ -162,7 +162,6 @@ def run_single_test(directory, file_name, file_extension: str = ".csv", repair_w
             for diagnoser_data in diagnosers_data:
                 diagnoser_class_name = diagnoser_data["class_name"]
                 diagnoser_output_name = diagnoser_data.get("output_name", diagnoser_class_name)
-                print(f"\t\t\t\t\t{diagnoser_output_name}")
                 diagnoser_parameters = diagnoser_data.get("parameters")
                 diagnoser_class = get_diagnoser(diagnoser_class_name)
                 if diagnoser_class is Oracle:
@@ -186,7 +185,6 @@ def run_single_test(directory, file_name, file_extension: str = ".csv", repair_w
                 for fixer_data in fixers_data:
                     fixer_class_name = fixer_data["class_name"]
                     fixer_output_name = fixer_data.get("output_name", fixer_class_name)
-                    print(f"\t\t\t\t\t\t{fixer_output_name}")
                     fixer_parameters = fixer_data.get("parameters")
                     fixer_class = get_fixer(fixer_class_name)
                     fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=faulty_nodes_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
