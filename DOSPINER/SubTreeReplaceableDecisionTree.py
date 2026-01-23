@@ -27,6 +27,7 @@ class SubTreeReplaceableDecisionTree(DecisionTreeClassifier):
                  X_prior: pd.DataFrame = None,
                  y_prior: pd.Series = None
                  ):
+        super().__init__()
         self.base_sklearn_tree_model = deepcopy(original_tree)
         
         self.replacement_candidates: list[TreeNodeComponent] = nodes_to_replace
