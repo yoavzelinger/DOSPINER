@@ -2,6 +2,9 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 import pandas as pd
 from copy import deepcopy
+from concurrent.futures import ProcessPoolExecutor
+from typing import Optional, Callable
+import os
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -15,12 +18,30 @@ from DOSPINER.Diagnosers import *
 
 from .AFixer import AFixer, ATreeFixer
 
+def _fix_estimator_worker(estimator_index: int,
+                          mapped_estimator: MappedDecisionTree,
+                          base_fixer_creator: Callable[[MappedDecisionTree, int], ATreeFixer]
+                          ) -> DecisionTreeClassifier:
+    """
+    Worker function to fix a single estimator in parallel.
+    
+    Args:
+        estimator_index: Index of the estimator in the forest
+        mapped_estimator: The mapped decision tree estimator
+        base_fixer_creator: Callable that creates a base fixer instance
+    
+    Returns:
+        DecisionTreeClassifier: The fixed decision tree estimator
+    """
+    fixer: ATreeFixer = base_fixer_creator(mapped_estimator, estimator_index)
+    return fixer.fix_model()
+
 class ForestFixerWrapper(AFixer):
     alias = "forest_fixer_wrapper"
 
     original_mapped_model: MappedRandomForest
 
-    def __init__(self, 
+    def __init__(self,
                  base_fixer_class: type[ATreeFixer],
                  mapped_model: MappedRandomForest,
                  X: pd.DataFrame,
@@ -29,20 +50,14 @@ class ForestFixerWrapper(AFixer):
                  X_prior: pd.DataFrame = None,
                  y_prior: pd.Series = None,
                  sklearn_model: RandomForestClassifier = None,
+                 max_workers: Optional[int] = None,
                  **kwargs: dict
     ):
-        super().__init__(
-            mapped_model,
-            X,
-            y,
-            faulty_nodes_indices,
-            X_prior,
-            y_prior,
-            sklearn_model
-        )
+        super().__init__(mapped_model, X, y, faulty_nodes_indices, X_prior, y_prior, sklearn_model)
         self.base_fixer_class: type[ATreeFixer] = base_fixer_class
         self.base_fixer_parameters = kwargs
         self.faulty_estimators: dict[int, list[int]] = self.get_faulty_estimators()
+        self.max_workers = max_workers or min(os.cpu_count() or 1, len(self.faulty_estimators))
 
     def get_faulty_estimators(self) -> dict[int, list[int]]:
         """
@@ -55,26 +70,43 @@ class ForestFixerWrapper(AFixer):
         for faulty_node_index in self.faulty_nodes_indices:
             estimator_index, sklearn_node_index = self.original_mapped_model.component_estimator_map[faulty_node_index]
             faulty_estimators[estimator_index].append(sklearn_node_index)
+        assert list(faulty_estimators.keys()) == sorted(faulty_estimators.keys())
         return faulty_estimators
+
+    def base_fixer_creator(self, mapped_estimator: MappedDecisionTree, faulty_estimator_index: int) -> ATreeFixer:
+        """
+        Create a base fixer instance for the given mapped estimator.
+        
+        Args:
+            mapped_estimator: The mapped decision tree estimator
+            faulty_estimator_index: Index of the faulty estimator
+            
+        Returns:
+            ATreeFixer: The configured fixer instance
+        """
+        return self.base_fixer_class(mapped_estimator, self.X, self.y, self.faulty_estimators[faulty_estimator_index], self.X_prior, self.y_prior, **self.base_fixer_parameters)
     
     def fix_model(self) -> RandomForestClassifier:
         """
-        Fix the model.
+        Fix the model using parallel processing.
 
         Returns:
             RandomForestClassifier: The fixed random forest.
         """
         self.fixed_model: RandomForestClassifier = deepcopy(self.sklearn_model)
-        for faulty_estimator_index, faulty_estimator_faulty_nodes_indices in self.faulty_estimators.items():
-            fixer: ATreeFixer = self.base_fixer_class(
-                mapped_model=self.original_mapped_model.mapped_estimators[faulty_estimator_index],
-                X=self.X,
-                y=self.y,
-                faulty_nodes_indices=faulty_estimator_faulty_nodes_indices,
-                X_prior=self.X_prior,
-                y_prior=self.y_prior,
-                **self.base_fixer_parameters
-            )
-            self.fixed_model.estimators_[faulty_estimator_index] = fixer.fix_model()
+        
+        # Prepare tasks for parallel execution
+        fixing_tasks = [(estimator_index, (estimator_index, mapped_estimator, self.base_fixer_creator))
+                        for estimator_index, mapped_estimator in enumerate(self.original_mapped_model.mapped_estimators)
+                        if estimator_index in self.faulty_estimators]
+        
+        # Execute tasks in parallel
+        with ProcessPoolExecutor(max_workers=self.max_workers) as executor:
+            futures = [(estimator_index, executor.submit(_fix_estimator_worker, *task)) for (estimator_index, task) in fixing_tasks]
+            fixed_estimators = [(estimator_index, future.result()) for (estimator_index, future) in futures]
+        
+        # Update the fixed model with results
+        for fixed_estimator_index, fixed_estimator in fixed_estimators:
+            self.fixed_model.estimators_[fixed_estimator_index] = fixed_estimator
 
         return self.fixed_model
