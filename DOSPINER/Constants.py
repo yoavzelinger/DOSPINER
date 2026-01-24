@@ -71,3 +71,7 @@ class SubTreeType(Enum):
     HoeffdingAdaptiveTreeClassifier = auto()
 
 DEFAULT_SUBTREE_TYPE = SubTreeType.HoeffdingAdaptiveTreeClassifier
+
+# Distributing Computation
+DISTRIBUTE_DIAGNOSES_COMPUTATION = True
+DISTRIBUTE_FIXING_COMPUTATION = False

@@ -3,6 +3,8 @@ from concurrent.futures import ProcessPoolExecutor
 from typing import Optional, Callable
 import os
 
+from DOSPINER import Constants as constants
+
 from DOSPINER.ModelMapping.MappedRandomForest import MappedRandomForest
 from DOSPINER.ModelMapping.MappedDecisionTree import MappedDecisionTree
 
@@ -34,7 +36,7 @@ def _diagnose_estimator_worker(estimator_index: int,
     try:
         diagnoser = base_diagnoser_creator(mapped_estimator)
         estimator_diagnoses = diagnoser.get_diagnoses(retrieve_ranks=True)
-    except SFLDT.UnaffectedModelException as e:  # Catch absolutely everything including SystemExit, KeyboardInterrupt
+    except SFLDT.UnaffectedModelException:
         pass
     finally:
         return [
@@ -106,17 +108,18 @@ class DistributedForestDiagnoser(ADiagnoser):
         """
         self.diagnoses: list[tuple[list[int], float]] = []
         
-        # Prepare tasks
         diagnosis_tasks = [(estimator_index, mapped_estimator, self.base_diagnoser_creator, self.convert_indices_to_global)
                            for estimator_index, mapped_estimator in enumerate(self.mapped_model.mapped_estimators)
                            ]
         
-        # Execute tasks
-        with ProcessPoolExecutor(max_workers=min(os.cpu_count() or 1, len(self.mapped_model.mapped_estimators))) as executor:
-            futures = [executor.submit(_diagnose_estimator_worker, *task) for task in diagnosis_tasks]
-            all_estimator_diagnoses = [future.result() for future in futures]
+        all_estimator_diagnoses: list[list[tuple[list[int], float]]]
+        if constants.DISTRIBUTE_DIAGNOSES_COMPUTATION:
+            with ProcessPoolExecutor(max_workers=min(os.cpu_count() or 1, len(self.mapped_model.mapped_estimators))) as executor:
+                futures = [executor.submit(_diagnose_estimator_worker, *task) for task in diagnosis_tasks]
+                all_estimator_diagnoses = [future.result() for future in futures]
+        else:
+            all_estimator_diagnoses = [_diagnose_estimator_worker(*task) for task in diagnosis_tasks]
         
-        # Aggregate results from all estimators
         for estimator_diagnoses in all_estimator_diagnoses:
             for diagnosis_index, (global_diagnosis, estimator_diagnosis_rank) in enumerate(estimator_diagnoses):
                 if diagnosis_index == len(self.diagnoses):

@@ -8,6 +8,7 @@ import os
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 
+import DOSPINER.Constants as constants
 from DOSPINER.ModelMapping.MappedDecisionTree import MappedDecisionTree
 from DOSPINER.ModelMapping.MappedRandomForest import MappedRandomForest
 
@@ -90,17 +91,18 @@ class ForestFixerWrapper(AFixer):
         """
         self.fixed_model: RandomForestClassifier = deepcopy(self.sklearn_model)
         
-        # Prepare tasks for parallel execution
         fixing_tasks = [(estimator_index, (estimator_index, mapped_estimator, self.base_fixer_creator))
                         for estimator_index, mapped_estimator in enumerate(self.original_mapped_model.mapped_estimators)
                         if estimator_index in self.faulty_estimators]
         
-        # Execute tasks in parallel
-        with ProcessPoolExecutor(max_workers=min(os.cpu_count() or 1, len(self.faulty_estimators))) as executor:
-            futures = [(estimator_index, executor.submit(_fix_estimator_worker, *task)) for (estimator_index, task) in fixing_tasks]
-            fixed_estimators = [(estimator_index, future.result()) for (estimator_index, future) in futures]
+        fixed_estimators: list[tuple[int, DecisionTreeClassifier]]
+        if constants.DISTRIBUTE_FIXING_COMPUTATION:
+            with ProcessPoolExecutor(max_workers=min(os.cpu_count() or 1, len(self.faulty_estimators))) as executor:
+                futures = [(estimator_index, executor.submit(_fix_estimator_worker, *task)) for (estimator_index, task) in fixing_tasks]
+                fixed_estimators = [(estimator_index, future.result()) for (estimator_index, future) in futures]
+        else:
+            fixed_estimators = [(estimator_index, _fix_estimator_worker(*task)) for (estimator_index, task) in fixing_tasks]
         
-        # Update the fixed model with results
         for fixed_estimator_index, fixed_estimator in fixed_estimators:
             self.fixed_model.estimators_[fixed_estimator_index] = fixed_estimator
 
