@@ -123,8 +123,6 @@ def run_single_test(directory, file_name, file_extension: str = ".csv", repair_w
 
             faulty_features_nodes = get_drifted_nodes(mapped_model, drifted_features)
 
-            print(f"\t\t\t\tDiagnosing")
-
             X_before_repair, y_before_repair = pd.concat([X_before, X_repair]).reset_index(drop=True), pd.concat([y_before, y_repair]).reset_index(drop=True)
 
             # Comparable Baselines
@@ -162,6 +160,7 @@ def run_single_test(directory, file_name, file_extension: str = ".csv", repair_w
             for diagnoser_data in diagnosers_data:
                 diagnoser_class_name = diagnoser_data["class_name"]
                 diagnoser_output_name = diagnoser_data.get("output_name", diagnoser_class_name)
+                print(f"\t\t\t\t{diagnoser_output_name} Diagnosing")
                 diagnoser_parameters = diagnoser_data.get("parameters")
                 diagnoser_class = get_diagnoser(diagnoser_class_name)
                 if diagnoser_class is Oracle:
@@ -260,8 +259,6 @@ def run_single_test_v2(directory, file_name, file_extension: str = ".csv", repai
 
             faulty_features_nodes = get_drifted_nodes(mapped_model, drifted_features)
 
-            print(f"\t\t\t\tDiagnosing")
-
             X_before_repair, y_before_repair = pd.concat([X_before, X_repair]).reset_index(drop=True), pd.concat([y_before, y_repair]).reset_index(drop=True)
             
             # Comparable Baselines
@@ -299,6 +296,7 @@ def run_single_test_v2(directory, file_name, file_extension: str = ".csv", repai
             for diagnoser_data in diagnosers_data:
                 diagnoser_class_name = diagnoser_data["class_name"]
                 diagnoser_output_name = diagnoser_data.get("output_name", diagnoser_class_name)
+                print(f"\t\t\t\t{diagnoser_output_name} Diagnosing")
                 diagnoser_parameters = diagnoser_data.get("parameters")
                 diagnoser_class = get_diagnoser(diagnoser_class_name)
                 if diagnoser_class is Oracle:
