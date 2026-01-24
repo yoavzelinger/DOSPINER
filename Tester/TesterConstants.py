@@ -44,7 +44,7 @@ TREE_PARAM_GRID = {
     "criterion": _CRITERIONS,
     "max_leaf_nodes": _TREE_MAX_LEAF_NODES
 }
-_FOREST_NUM_ESTIMATORS = 10
+_FOREST_NUM_ESTIMATORS = 100
 FOREST_PARAM_GRID = {
     "criterion": _CRITERIONS,
     "n_estimators": [_FOREST_NUM_ESTIMATORS]
