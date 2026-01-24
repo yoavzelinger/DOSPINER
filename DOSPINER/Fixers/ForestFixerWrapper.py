@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from collections import defaultdict
 import pandas as pd
 from copy import deepcopy
@@ -9,8 +8,6 @@ import os
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 
-from DOSPINER.ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
-from DOSPINER.ModelMapping.TreeNodeComponent import TreeNodeComponent
 from DOSPINER.ModelMapping.MappedDecisionTree import MappedDecisionTree
 from DOSPINER.ModelMapping.MappedRandomForest import MappedRandomForest
 
