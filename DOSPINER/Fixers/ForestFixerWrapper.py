@@ -47,14 +47,12 @@ class ForestFixerWrapper(AFixer):
                  X_prior: pd.DataFrame = None,
                  y_prior: pd.Series = None,
                  sklearn_model: RandomForestClassifier = None,
-                 max_workers: Optional[int] = None,
                  **kwargs: dict
     ):
         super().__init__(mapped_model, X, y, faulty_nodes_indices, X_prior, y_prior, sklearn_model)
         self.base_fixer_class: type[ATreeFixer] = base_fixer_class
         self.base_fixer_parameters = kwargs
         self.faulty_estimators: dict[int, list[int]] = self.get_faulty_estimators()
-        self.max_workers = max_workers or min(os.cpu_count() or 1, len(self.faulty_estimators))
 
     def get_faulty_estimators(self) -> dict[int, list[int]]:
         """
@@ -98,7 +96,7 @@ class ForestFixerWrapper(AFixer):
                         if estimator_index in self.faulty_estimators]
         
         # Execute tasks in parallel
-        with ProcessPoolExecutor(max_workers=self.max_workers) as executor:
+        with ProcessPoolExecutor(max_workers=min(os.cpu_count() or 1, len(self.faulty_estimators))) as executor:
             futures = [(estimator_index, executor.submit(_fix_estimator_worker, *task)) for (estimator_index, task) in fixing_tasks]
             fixed_estimators = [(estimator_index, future.result()) for (estimator_index, future) in futures]
         

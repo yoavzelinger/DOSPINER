@@ -60,7 +60,6 @@ class DistributedForestDiagnoser(ADiagnoser):
                  mapped_model: MappedRandomForest,
                  X: pd.DataFrame,
                  y: pd.Series,
-                 max_workers: Optional[int] = None,
                  **kwargs: object
     ):
         """
@@ -78,7 +77,6 @@ class DistributedForestDiagnoser(ADiagnoser):
         super().__init__(mapped_model, X, y)
         self.base_estimator_class = base_diagnoser_class
         self.base_diagnoser_parameters = kwargs
-        self.max_workers = max_workers or min(os.cpu_count() or 1, len(mapped_model.mapped_estimators))
 
     def base_diagnoser_creator(self, mapped_estimator: MappedDecisionTree) -> ADiagnoser:
         return self.base_estimator_class(mapped_estimator, self.X_after, self.y_after, **self.base_diagnoser_parameters)
@@ -114,7 +112,7 @@ class DistributedForestDiagnoser(ADiagnoser):
                            ]
         
         # Execute tasks
-        with ProcessPoolExecutor(max_workers=self.max_workers) as executor:
+        with ProcessPoolExecutor(max_workers=min(os.cpu_count() or 1, len(self.mapped_model.mapped_estimators))) as executor:
             futures = [executor.submit(_diagnose_estimator_worker, *task) for task in diagnosis_tasks]
             all_estimator_diagnoses = [future.result() for future in futures]
         
