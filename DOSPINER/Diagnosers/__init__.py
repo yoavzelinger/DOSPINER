@@ -54,9 +54,6 @@ def get_diagnoser(diagnoser_name: str
     
     DiagnoserClass = DIAGNOSER_CLASSES_DICT[diagnoser_name]
     
-    if DiagnoserClass is Oracle:
-        return DiagnoserClass
-    
     match constants.DRIFTING_MODEL:
         case constants.DriftingModel.DecisionTree:
             return DiagnoserClass
