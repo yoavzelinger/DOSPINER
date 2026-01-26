@@ -1,7 +1,9 @@
 import pandas as pd
 from concurrent.futures import ProcessPoolExecutor
-from typing import Optional, Callable
+from typing import Callable
 import os
+
+from sklearn.metrics import accuracy_score
 
 from DOSPINER import Constants as constants
 
@@ -107,9 +109,12 @@ class DistributedForestDiagnoser(ADiagnoser):
         Achieved by running the base diagnoser on each tree in parallel and aggregate the results.
         """
         self.diagnoses: list[tuple[list[int], float]] = []
-        
+
+        # diagnose only buggy estimators
+        is_estimator_buggy: Callable[[MappedDecisionTree], bool] = lambda mapped_estimator: mapped_estimator.model.best_accuracy - accuracy_score(self.y_after, mapped_estimator.model.predict(self.X_after)) >= constants.MINIMUM_DRIFT_ACCURACY_DROP
+        buggy_estimators = filter(lambda estimator_index, mapped_estimator: is_estimator_buggy(mapped_estimator), enumerate(self.mapped_model.mapped_estimators)) # needs to include the estimator index to maintain the global conversion
         diagnosis_tasks = [(estimator_index, mapped_estimator, self.base_diagnoser_creator, self.convert_indices_to_global)
-                           for estimator_index, mapped_estimator in enumerate(self.mapped_model.mapped_estimators)
+                           for estimator_index, mapped_estimator in buggy_estimators
                            ]
         
         all_estimator_diagnoses: list[list[tuple[list[int], float]]]
