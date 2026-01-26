@@ -214,11 +214,11 @@ class SubTreeReplaceableDecisionTree(DecisionTreeClassifier):
             np.ndarray: The predicted class probabilities.
         """
         check_is_fitted(self)
+
+        if isinstance(X, np.ndarray):
+            X = pd.DataFrame(X, columns=list(self.feature_names_in_))
         
-        # Validate feature names if available
-        if hasattr(self, 'feature_names_in_') and hasattr(X, 'columns'):
-            if not np.array_equal(self.feature_names_in_, X.columns):
-                raise ValueError("Feature names don't match training data")
+        assert np.array_equal(self.feature_names_in_, X.columns), "Feature names don't match training data"
         
         decision_paths = self.base_sklearn_tree_model.decision_path(X)
         
@@ -231,15 +231,8 @@ class SubTreeReplaceableDecisionTree(DecisionTreeClassifier):
         probabilities = []
         for i in range(len(X)):
             prediction_tree = get_prediction_tree(i)
-            # Use array indexing that works for both DataFrame and numpy array
-            if hasattr(X, 'iloc'):
-                # pandas DataFrame
-                X_sample = X.iloc[[i]]
-            else:
-                # numpy array
-                X_sample = X[i:i+1]
             
-            proba = prediction_tree.predict_proba(X_sample)
+            proba = prediction_tree.predict_proba(X.iloc[[i]])
             # Flatten the probability if it's a 2D array with one row
             if isinstance(proba, np.ndarray) and proba.shape[0] == 1:
                 proba = proba[0]
@@ -259,68 +252,4 @@ class SubTreeReplaceableDecisionTree(DecisionTreeClassifier):
             np.ndarray: The predicted class log-probabilities.
         """
         return np.log(self.predict_proba(X))
-    
-    @property
-    def feature_importances_(self) -> np.ndarray:
-        """
-        Return the feature importances.
         
-        Returns:
-            np.ndarray: The feature importances from the base tree.
-        """
-        check_is_fitted(self)
-        return self.base_sklearn_tree_model.feature_importances_
-    
-    def get_depth(self) -> int:
-        """
-        Return the depth of the decision tree.
-        
-        Returns:
-            int: The maximum depth of the base tree.
-        """
-        check_is_fitted(self)
-        return self.base_sklearn_tree_model.get_depth()
-    
-    def get_n_leaves(self) -> int:
-        """
-        Return the number of leaves of the decision tree.
-        
-        Returns:
-            int: The number of leaves in the base tree.
-        """
-        check_is_fitted(self)
-        return self.base_sklearn_tree_model.get_n_leaves()
-    
-    def apply(self, X: pd.DataFrame) -> np.ndarray:
-        """
-        Return the index of the leaf that each sample is predicted as.
-        
-        Parameters:
-            X (pd.DataFrame): The input features.
-            
-        Returns:
-            np.ndarray: The leaf indices for each sample.
-        """
-        check_is_fitted(self)
-        
-        # Validate feature names if available
-        if hasattr(self, 'feature_names_in_') and hasattr(X, 'columns'):
-            if not np.array_equal(self.feature_names_in_, X.columns):
-                raise ValueError("Feature names don't match training data")
-        
-        return self.base_sklearn_tree_model.apply(X)
-    
-    def cost_complexity_pruning_path(self, X: pd.DataFrame, y: pd.Series, sample_weight=None):
-        """
-        Compute the pruning path during Minimal Cost-Complexity Pruning.
-        
-        Parameters:
-            X (pd.DataFrame): The training input samples.
-            y (pd.Series): The target values.
-            sample_weight (array-like, optional): Sample weights.
-            
-        Returns:
-            Bunch: Dictionary-like object with pruning path information.
-        """
-        check_is_fitted(self)
-        return self.base_sklearn_tree_model.cost_complexity_pruning_path(X, y, sample_weight)
