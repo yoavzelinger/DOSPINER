@@ -118,7 +118,7 @@ class DistributedForestDiagnoser(ADiagnoser):
                            ]
         
         all_estimator_diagnoses: list[list[tuple[list[int], float]]]
-        if constants.DISTRIBUTE_DIAGNOSES_COMPUTATION:
+        if constants.DISTRIBUTE_DIAGNOSES_COMPUTATION and self.base_estimator_class is not Oracle:
             with ProcessPoolExecutor(max_workers=min(os.cpu_count() or 1, len(self.mapped_model.mapped_estimators))) as executor:
                 futures = [executor.submit(_diagnose_estimator_worker, *task) for task in diagnosis_tasks]
                 all_estimator_diagnoses = [future.result() for future in futures]
