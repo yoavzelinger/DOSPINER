@@ -17,6 +17,8 @@ class PriorDataDecisionTreeClassifierWrapper(DecisionTreeClassifier):
         self.X_prior = X_prior
         self.y_prior = y_prior
 
+        self.model = model # Stored for sklearn compatibility
+
     def fit(self, X: pd.DataFrame | np.ndarray, y: pd.Series):
         return super().fit(pd.concat([self.X_prior, X], ignore_index=True),
                            pd.concat([self.y_prior, y], ignore_index=True))
