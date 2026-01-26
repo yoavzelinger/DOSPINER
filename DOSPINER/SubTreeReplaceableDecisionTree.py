@@ -175,11 +175,11 @@ class SubTreeReplaceableDecisionTree(DecisionTreeClassifier):
             self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
             self.replaced_subtrees[node_to_replace].fit(*node_to_replace.get_data_reached_node(X, y, allow_empty=False))
 
+        self.feature_names_in_ = np.array(X.columns, dtype=object)
+        self.classes_ = np.unique(y)
         self.n_features_in_ = X.shape[1]
         self.n_classes_ = len(self.classes_)
         self.n_outputs_ = 1
-        self.feature_names_in_ = np.array(X.columns, dtype=object)
-        self.classes_ = np.unique(y)
         
         self.tree_ = self.base_sklearn_tree_model.tree_
         self.max_features_ = getattr(self.base_sklearn_tree_model, 'max_features_', None)
