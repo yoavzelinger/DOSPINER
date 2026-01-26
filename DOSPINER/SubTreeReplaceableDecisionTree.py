@@ -186,12 +186,13 @@ class SubTreeReplaceableDecisionTree(DecisionTreeClassifier):
         
         return self
 
-    def predict(self, X: pd.DataFrame) -> np.ndarray:
+    def predict(self, X: pd.DataFrame | np.ndarray, check_input=False) -> np.ndarray:
         """
         Predict the class labels for the given input data.
 
         Parameters:
-            X (pd.DataFrame): The input features.
+            X (pd.DataFrame | np.ndarray): The input features.
+            check_input (bool): Whether to check the input features. MATCHING THE BASE BUT NOT USING IT.
 
         Returns:
             np.ndarray: The predicted class labels.
@@ -201,12 +202,13 @@ class SubTreeReplaceableDecisionTree(DecisionTreeClassifier):
         proba = self.predict_proba(X)
         return self.classes_[np.argmax(proba, axis=1)]
     
-    def predict_proba(self, X: pd.DataFrame) -> np.ndarray:
+    def predict_proba(self, X: pd.DataFrame | np.ndarray, check_input=False) -> np.ndarray:
         """
         Predict class probabilities for the given input data.
 
         Parameters:
-            X (pd.DataFrame): The input features.
+            X (pd.DataFrame | np.ndarray): The input features.
+            check_input (bool): Whether to check the input features. MATCHING THE BASE BUT NOT USING IT.
 
         Returns:
             np.ndarray: The predicted class probabilities.
@@ -229,7 +231,15 @@ class SubTreeReplaceableDecisionTree(DecisionTreeClassifier):
         probabilities = []
         for i in range(len(X)):
             prediction_tree = get_prediction_tree(i)
-            proba = prediction_tree.predict_proba(X.iloc[[i]])
+            # Use array indexing that works for both DataFrame and numpy array
+            if hasattr(X, 'iloc'):
+                # pandas DataFrame
+                X_sample = X.iloc[[i]]
+            else:
+                # numpy array
+                X_sample = X[i:i+1]
+            
+            proba = prediction_tree.predict_proba(X_sample)
             # Flatten the probability if it's a 2D array with one row
             if isinstance(proba, np.ndarray) and proba.shape[0] == 1:
                 proba = proba[0]
@@ -237,12 +247,13 @@ class SubTreeReplaceableDecisionTree(DecisionTreeClassifier):
         
         return np.array(probabilities)
     
-    def predict_log_proba(self, X: pd.DataFrame) -> np.ndarray:
+    def predict_log_proba(self, X: pd.DataFrame | np.ndarray, check_input=False) -> np.ndarray:
         """
         Predict class log-probabilities for the given input data.
 
         Parameters:
-            X (pd.DataFrame): The input features.
+            X (pd.DataFrame | np.ndarray): The input features.
+            check_input (bool): Whether to check the input features. MATCHING THE BASE BUT NOT USING IT.
 
         Returns:
             np.ndarray: The predicted class log-probabilities.
