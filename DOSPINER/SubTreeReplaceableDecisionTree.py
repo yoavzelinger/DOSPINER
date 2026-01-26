@@ -44,7 +44,7 @@ class SubTreeReplaceableDecisionTree(DecisionTreeClassifier):
             ccp_alpha=getattr(original_tree, 'ccp_alpha', 0.0),
             monotonic_cst=getattr(original_tree, 'monotonic_cst', None)
         )
-        self.base_sklearn_tree_model = deepcopy(original_tree)
+        self.base_sklearn_tree_model: DecisionTreeClassifier = deepcopy(original_tree)
         
         self.replacement_candidates: list[TreeNodeComponent] = nodes_to_replace
         self.replaced_subtrees: dict[TreeNodeComponent, DecisionTreeClassifier] = {}
