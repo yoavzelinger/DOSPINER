@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from scipy.sparse import csr_matrix
 
+from DOSPINER import Constants as constants
 from sklearn.tree import DecisionTreeClassifier, export_text
 from sklearn.tree._tree import TREE_LEAF
 
@@ -32,6 +33,14 @@ class MappedDecisionTree(ATreeBasedMappedModel):
             y (Series): The target column.
         """
         self.prune = prune
+        if constants.SYNTHESIZE_BY_BOOTSTRAP and hasattr(model, "sample_weight"):
+            # Use only the trained indices
+            assert X is not None and y is not None, "X and y must be provided to fit the model with sample weights"
+            sample_weights = model.sample_weight
+            assert sum(sample_weights) == len(X), "Sample weights must sum to the number of samples"
+            train_indices = X.sample(n=len(X), replace=True, weights=sample_weights).index
+            X = X.loc[train_indices].reset_index(drop=True)
+            y = y.loc[train_indices].reset_index(drop=True)
         super().__init__(model, X, y, feature_types)
 
     def update_model_statistics(self, X: pd.DataFrame, y: pd.Series):
