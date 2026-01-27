@@ -2,10 +2,63 @@ import pandas as pd
 import numpy as np
 
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import accuracy_score
 
 import Tester.TesterConstants as tester_constants
+
+class StoredSampleWeightsRandomForestClassifier(RandomForestClassifier):
+    class StoredSampleWeightsDecisionTreeClassifier(DecisionTreeClassifier):
+        def _fit(self, X, y, sample_weight=None, check_input=True, missing_values_in_feature_mask=None):
+            self.sample_weight = sample_weight
+            return super()._fit(X, y, sample_weight, check_input, missing_values_in_feature_mask)
+        
+    def __init__(
+        self,
+        n_estimators=100,
+        *,
+        criterion="gini",
+        max_depth=None,
+        min_samples_split=2,
+        min_samples_leaf=1,
+        min_weight_fraction_leaf=0.0,
+        max_features="sqrt",
+        max_leaf_nodes=None,
+        min_impurity_decrease=0.0,
+        bootstrap=True,
+        oob_score=False,
+        n_jobs=None,
+        random_state=None,
+        verbose=0,
+        warm_start=False,
+        class_weight=None,
+        ccp_alpha=0.0,
+        max_samples=None,
+        monotonic_cst=None,
+    ):
+        super().__init__(
+            n_estimators=n_estimators,
+            criterion=criterion,
+            max_depth=max_depth,
+            min_samples_split=min_samples_split,
+            min_samples_leaf=min_samples_leaf,
+            min_weight_fraction_leaf=min_weight_fraction_leaf,
+            max_features=max_features,
+            max_leaf_nodes=max_leaf_nodes,
+            min_impurity_decrease=min_impurity_decrease,
+            bootstrap=bootstrap,
+            oob_score=oob_score,
+            n_jobs=n_jobs,
+            random_state=random_state,
+            verbose=verbose,
+            warm_start=warm_start,
+            class_weight=class_weight,
+            ccp_alpha=ccp_alpha,
+            max_samples=max_samples,
+            monotonic_cst=monotonic_cst,
+        )
+        self.estimator = StoredSampleWeightsRandomForestClassifier.StoredSampleWeightsDecisionTreeClassifier()
 
 def build_forest(
         X_train: pd.DataFrame,
@@ -52,7 +105,7 @@ def build_forest(
                                      cv=cross_validation_split_count)
     grid_search_classifier.fit(modified_X_train, modified_y_train)
     
-    model = RandomForestClassifier(**grid_search_classifier.best_params_, 
+    model = StoredSampleWeightsRandomForestClassifier(**grid_search_classifier.best_params_, 
                                    random_state=tester_constants.constants.RANDOM_STATE,
                                    )
     model.fit(X_train, y_train)
