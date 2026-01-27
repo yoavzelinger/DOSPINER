@@ -18,3 +18,6 @@ results/**/*temp*
 
 # old results
 results/old results/*
+
+# temporary excel files
+results/*~*.xlsx
