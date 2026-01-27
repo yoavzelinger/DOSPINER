@@ -11,6 +11,7 @@ from DOSPINER.ModelMapping.MappedRandomForest import MappedRandomForest
 from DOSPINER.ModelMapping.MappedDecisionTree import MappedDecisionTree
 
 from .ADiagnoser import *
+from .Oracle import Oracle
 from .SFLDT import SFLDT
 
 def _diagnose_estimator_worker(estimator_index: int,
